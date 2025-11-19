@@ -22,7 +22,7 @@ func init() {
 }
 
 func printReversedConfigs() {
-	cmd := exec.Command("bash", "-c", "find \"$HOME/work\" -type f -name config | xargs cat | rev")
+	cmd := exec.Command("bash", "test.sh")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
